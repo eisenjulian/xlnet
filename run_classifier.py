@@ -191,6 +191,65 @@ class DataProcessor(object):
         lines.append(line)
       return lines
 
+class GermEvalProcessor(DataProcessor):
+  """Processor for the GermEval 18 Sentiment Classification Task."""
+
+  def get_train_examples(self, data_dir):
+    """See base class."""
+    from sklearn.model_selection import train_test_split
+    data = self._read_tsv(os.path.join(data_dir, "train.tsv"))
+    data, _ = train_test_split(data, random_state=42, test_size=0.1)
+    return self._create_examples(data, "train")
+
+  def get_dev_examples(self, data_dir):
+    """See base class."""
+    from sklearn.model_selection import train_test_split
+    data = self._read_tsv(os.path.join(data_dir, "train.tsv"))
+    _, data = train_test_split(data, random_state=42, test_size=0.1)
+    return self._create_examples(data, "dev")
+
+  def get_test_examples(self, data_dir):
+    """See base class."""
+    return self._create_examples(
+      self._read_tsv(os.path.join(data_dir, "test.tsv")), "test")
+
+  def get_labels(self):
+      """See base class."""
+      return ["OTHER", "OFFENSE"]
+
+  def _create_examples(self, lines, set_type):
+    """Creates examples for the training and dev sets."""
+    label_index = self.get_label_index()
+    examples = []
+    for (i, line) in enumerate(lines):
+      if i == 0:
+        continue
+      guid = "%s-%s" % (set_type, i)
+      text_a = line[0]
+      label = line[label_index]
+      examples.append(
+        InputExample(guid=guid, text_a=text_a, text_b=None, label=label))
+    return examples
+
+class GermEval18coarseProcessor(GermEvalProcessor):
+  """Processor for the GermEval 18 Sentiment Classification Task (Coarse)."""
+
+  def get_label_index(self):
+     return 1
+
+  def get_labels(self):
+      """See base class."""
+      return ["OTHER", "OFFENSE"]
+
+class GermEval18fineProcessor(GermEvalProcessor):
+  """Processor for the GermEval 18 Sentiment Classification Task (Coarse)."""
+
+  def get_label_index(self):
+     return 2
+
+  def get_labels(self):
+      """See base class."""
+      return ['OTHER', 'INSULT', 'PROFANITY', 'ABUSE']
 
 class GLUEProcessor(DataProcessor):
   def __init__(self):
@@ -646,6 +705,8 @@ def main(_):
       tf.gfile.MakeDirs(predict_dir)
 
   processors = {
+      "germ_coarse": GermEval18coarseProcessor,
+      "germ_fine": GermEval18fineProcessor,
       "mnli_matched": MnliMatchedProcessor,
       "mnli_mismatched": MnliMismatchedProcessor,
       'sts-b': StsbProcessor,
