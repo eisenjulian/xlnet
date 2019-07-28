@@ -215,10 +215,6 @@ class GermEvalProcessor(DataProcessor):
     return self._create_examples(
       self._read_tsv(os.path.join(data_dir, "test.tsv")), "test")
 
-  def get_labels(self):
-      """See base class."""
-      return ["OTHER", "OFFENSE"]
-
   def _create_examples(self, lines, set_type):
     """Creates examples for the training and dev sets."""
     label_index = self.get_label_index()
