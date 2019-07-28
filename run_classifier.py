@@ -70,6 +70,8 @@ flags.DEFINE_string("data_dir", default="",
       help="Directory for input data.")
 
 # TPUs and machines
+flags.DEFINE_string("tpu_address", default=None, help="TPU address.")
+flags.DEFINE_bool("use_colab_tpu", default=False, help="whether to use Colab TPU.")
 flags.DEFINE_bool("use_tpu", default=False, help="whether to use TPU.")
 flags.DEFINE_integer("num_hosts", default=1, help="How many TPU hosts.")
 flags.DEFINE_integer("num_core_per_host", default=8,
