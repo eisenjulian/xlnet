@@ -94,13 +94,10 @@ def init_from_checkpoint(FLAGS, global_vars=False):
       tf.train.init_from_checkpoint(init_checkpoint, assignment_map)
 
     # Log customized initialization
-    tf.logging.info("**** Global Variables ****")
+    tf.logging.info("**** Global Variables not in checkpoint ****")
     for var in tvars:
-      init_string = ""
-      if var.name in initialized_variable_names:
-        init_string = ", *INIT_FROM_CKPT*"
-      tf.logging.info("  name = %s, shape = %s%s", var.name, var.shape,
-                      init_string)
+      if var.name not in initialized_variable_names:
+        tf.logging.info("  name = %s, shape = %s", var.name, var.shape)
   return scaffold_fn
 
 
